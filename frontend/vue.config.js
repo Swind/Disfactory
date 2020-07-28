@@ -4,7 +4,7 @@ module.exports = {
     disableHostCheck: true,
     proxy: {
       '/server': {
-        target: 'https://staging.disfactory.tw',
+        target: 'http://localhost:8000',
         changeOrigin: true,
         pathRewrite: {
           '^/server': ''

@@ -20,7 +20,7 @@ export type UploadedImages = {
   src: string // used for preview images
 }[]
 
-export async function getFactories (range: number, lng: number, lat: number): Promise<FactoriesResponse> {
+export async function getFactories(range: number, lng: number, lat: number): Promise<FactoriesResponse> {
   try {
     const { data } = await instance.get(`/factories?range=${range}&lng=${lng}&lat=${lat}`)
     return data
@@ -32,7 +32,7 @@ export async function getFactories (range: number, lng: number, lat: number): Pr
 
 const IMGUR_CLIENT_ID = '39048813b021935'
 
-async function uploadToImgur (file: File) {
+async function uploadToImgur(file: File) {
   const formData = new FormData()
   formData.append('image', file)
 
@@ -57,7 +57,7 @@ const convertTurple2Number = (input: [number, number, number]) => input[0] + (in
 type ExifData = { DateTimeOriginal?: string, GPSLatitude?: [number, number, number], GPSLongitude?: [number, number, number] }
 type AfterExifData = { Latitude?: number, Longitude?: number, DateTimeOriginal?: string }
 
-function readImageExif (file: File): Promise<AfterExifData> {
+function readImageExif(file: File): Promise<AfterExifData> {
   const fileReader = new FileReader()
   return new Promise((resolve) => {
     fileReader.onload = (e: ProgressEvent<FileReader>) => {
@@ -84,7 +84,7 @@ function readImageExif (file: File): Promise<AfterExifData> {
   })
 }
 
-async function uploadExifAndGetToken ({ link, file }: { link: string, file: File }) {
+async function uploadExifAndGetToken({ link, file }: { link: string, file: File }) {
   const exifData = await readImageExif(file)
   const { data }: { data: ImageResponse } = await instance.post('/images', { url: link, ...exifData })
 
@@ -94,13 +94,13 @@ async function uploadExifAndGetToken ({ link, file }: { link: string, file: File
   }
 }
 
-export async function uploadImages (files: FileList): Promise<UploadedImages> {
+export async function uploadImages(files: FileList): Promise<UploadedImages> {
   return Promise.all(
     Array.from(files).map((file) => uploadToImgur(file).then((el) => uploadExifAndGetToken(el)))
   )
 }
 
-export async function updateFactoryImages (factoryId: string, files: FileList, { nickname, contact }: { nickname?: string, contact?: string }) {
+export async function updateFactoryImages(factoryId: string, files: FileList, { nickname, contact }: { nickname?: string, contact?: string }) {
   return Promise.all(
     Array.from(files).map((file) => uploadToImgur(file).then((el) => (async () => {
       const exifData = await readImageExif(el.file)
@@ -112,7 +112,7 @@ export async function updateFactoryImages (factoryId: string, files: FileList, {
   )
 }
 
-export async function createFactory (factory: FactoryPostData): Promise<FactoryData> {
+export async function createFactory(factory: FactoryPostData): Promise<FactoryData> {
   try {
     const { data }: { data: FactoryData } = await instance.post('/factories', JSON.stringify(factory))
 
@@ -132,7 +132,7 @@ type UpdatableFactoryFields = {
   images: string[]
 }
 
-export async function updateFactory (factoryId: string, factoryData: Partial<UpdatableFactoryFields>): Promise<FactoryData> {
+export async function updateFactory(factoryId: string, factoryData: Partial<UpdatableFactoryFields>): Promise<FactoryData> {
   try {
     const { data }: { data: FactoryData } = await instance.put(`/factories/${factoryId}`, JSON.stringify(factoryData))
 
