@@ -8,6 +8,7 @@ black = "==19.3b0"
 freezegun = "*"
 pylint = "*"
 pylint-django = "*"
+autopep8 = "*"
 
 [packages]
 django = "==2.2.13"
@@ -21,6 +22,7 @@ gunicorn = "*"
 django-q = "==1.0.2"
 django-db-logger = "*"
 django-admin-rangefilter = "*"
+drf-yasg = "*"
 
 [requires]
 python_version = "3.7"

@@ -10,6 +10,9 @@ from django.db import transaction
 from django_q.tasks import async_task
 from rest_framework.decorators import api_view
 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 from .utils import _get_nearby_factories, _get_client_ip
 from ..models import Factory, Image, ReportRecord
 from ..serializers import FactorySerializer
@@ -34,6 +37,36 @@ def _all_image_id_exist(image_ids: List[str]) -> bool:
     return len(images) == len(image_ids)
 
 
+@swagger_auto_schema(
+    method="get",
+    operation_summary='得到中心座標往外指定範圍的已有工廠資料',
+    responses={
+        200: openapi.Response('已有工廠資料', FactorySerializer)
+    },
+    manual_parameters=[
+        openapi.Parameter(
+            name='lng',
+            in_=openapi.IN_QUERY,
+            description='lng',
+            type=openapi.TYPE_NUMBER,
+            required=True,
+        ),
+        openapi.Parameter(
+            name='lat',
+            in_=openapi.IN_QUERY,
+            description='lat',
+            type=openapi.TYPE_NUMBER,
+            required=True,
+        ),
+        openapi.Parameter(
+            name='range',
+            in_=openapi.IN_QUERY,
+            description='km',
+            type=openapi.TYPE_NUMBER,
+            required=True,
+        )
+    ]
+)
 @api_view(["GET", "POST"])
 def get_nearby_or_create_factories(request):
     # TODO
@@ -97,7 +130,8 @@ def get_nearby_or_create_factories(request):
         image_ids = post_body.get('images', [])
 
         if not _all_image_id_exist(image_ids):
-            LOGGER.warning(f"{user_ip} : <please check if every image id exist> ")
+            LOGGER.warning(
+                f"{user_ip} : <please check if every image id exist> ")
             return HttpResponse(
                 "please check if every image id exist",
                 status=400,
@@ -130,6 +164,7 @@ def get_nearby_or_create_factories(request):
                 report_record=report_record
             )
         serializer = FactorySerializer(new_factory)
-        LOGGER.info(f"{user_ip}: <Create new factory> at {(post_body['lng'], post_body['lat'])} id:{new_factory.id} {new_factory_field['name']} {new_factory_field['factory_type']}")
+        LOGGER.info(
+            f"{user_ip}: <Create new factory> at {(post_body['lng'], post_body['lat'])} id:{new_factory.id} {new_factory_field['name']} {new_factory_field['factory_type']}")
         async_task("api.tasks.update_landcode", new_factory.id)
         return JsonResponse(serializer.data, safe=False)
