@@ -83,7 +83,7 @@ def _handle_get_factories(request):
 
 
 def _handle_create_factory(request):
-    post_body = json.loads(request.body)
+    post_body = request.data
     user_ip = _get_client_ip(request)
 
     LOGGER.debug(f"Received request body: {post_body} to create factory")
@@ -143,7 +143,8 @@ def _handle_create_factory(request):
     method="get",
     operation_summary='得到中心座標往外指定範圍的已有工廠資料',
     responses={
-        200: openapi.Response('已有工廠資料', FactorySerializer)
+        200: openapi.Response('工廠資料', FactorySerializer),
+        400: "request failed"
     },
     manual_parameters=[
         openapi.Parameter(
@@ -171,10 +172,11 @@ def _handle_create_factory(request):
 )
 @swagger_auto_schema(
     method="post",
-    operation_summary='新增編輯指定 id 的工廠欄位資料',
+    operation_summary='新增指定 id 的工廠欄位資料',
     request_body=FactorySerializer,
     responses={
-        200: openapi.Response('建立或者更新後的工廠資料', FactorySerializer)
+        200: openapi.Response('新增的工廠資料', FactorySerializer),
+        400: "request failed"
     },
 )
 @api_view(["GET", "POST"])
