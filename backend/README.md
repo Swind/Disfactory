@@ -137,7 +137,7 @@ PostgreSQL 與 PostGIS 有兩種設定方式，可以使用 Docker + docker-comp
 #### 使用 Docker + docker-compose
 
 ```
-docker-compose run -f docker-compose.dev.yml --service-ports -d db
+docker-compose -f docker-compose.dev.yml run --service-ports -d db
 ```
 
 有安裝 `make` 的話也可以使用 `make run-db` 來啟動
