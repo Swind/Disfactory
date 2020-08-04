@@ -13,7 +13,7 @@ from rest_framework.decorators import api_view
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from .utils import _get_nearby_factories, _get_client_ip
+from .utils import _get_nearby_factories, _get_nearby_factories_by_haversine_formula, _get_client_ip
 from ..models import Factory, Image, ReportRecord
 from ..serializers import FactorySerializer
 
@@ -72,11 +72,14 @@ def _handle_get_factories(request):
             status=400,
         )
 
-    nearby_factories = _get_nearby_factories(
+    nearby_factories = _get_nearby_factories_by_haversine_formula(
         latitude=latitude,
         longitude=longitude,
         radius=radius,
     )
+
+    for factory in nearby_factories:
+        print(factory)
 
     serializer = FactorySerializer(nearby_factories, many=True)
     return JsonResponse(serializer.data, safe=False)

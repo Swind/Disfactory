@@ -24,6 +24,24 @@ def _get_nearby_factories(latitude, longitude, radius):
         ids = _sample(ids, settings.MAX_FACTORY_PER_GET)
     return Factory.objects.filter(id__in=[obj.id for obj in ids])
 
+def _get_nearby_factories_by_haversine_formula(latitude, longitude, radius):
+    limit = settings.MAX_FACTORY_PER_GET
+    sql = """
+        select *, distance
+        from (
+            select *, 
+            ( 3959 * acos( cos( radians({target_lat}) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians({target_lng}) ) + sin( radians({target_lat}) ) * sin( radians( lat) ) ) ) 
+            as distance
+            from api_factory 
+        ) as dt
+        where distance < {radius} 
+        order by distance asc
+        limit {limit} 
+    """.format(target_lat=latitude, target_lng=longitude, radius=radius, limit=limit) 
+
+    return Factory.objects.raw(sql)
+
+
 
 def _get_client_ip(request):
     # ref: https://stackoverflow.com/a/30558984

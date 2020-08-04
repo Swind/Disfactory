@@ -55,7 +55,7 @@ class Factory(SoftDeleteMixin):
 
     lat = models.FloatField()
     lng = models.FloatField()
-    point = models.PointField(srid=settings.POSTGIS_SRID)
+    #point = models.PointField(srid=settings.POSTGIS_SRID)
     landcode = models.CharField(max_length=50, blank=True, null=True)
     towncode = models.CharField(max_length=50, blank=True, null=True)
     townname = models.CharField(max_length=50, blank=True, null=True)
@@ -90,8 +90,8 @@ class Factory(SoftDeleteMixin):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        self.point = Point(self.lng, self.lat, srid=4326)
-        self.point.transform(settings.POSTGIS_SRID)
+        #self.point = Point(self.lng, self.lat, srid=4326)
+        #self.point.transform(settings.POSTGIS_SRID)
         super(Factory, self).save(*args, **kwargs)
 
 
