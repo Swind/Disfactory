@@ -192,6 +192,9 @@ class FactoryAdmin(
         "sectcode",
         "landcode",
         "factory_type",
+        "building_status",
+        "usage_status",
+        "highlight_category",
         "source",
         "name",
     )
@@ -202,6 +205,9 @@ class FactoryAdmin(
         "cet_review_status",
         "source",
         "factory_type",
+        "building_status",
+        "usage_status",
+        "highlight_category",
         FactoryFilteredByCounty,
     )
     ordering = ["-created_at"]
